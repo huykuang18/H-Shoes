@@ -16,6 +16,7 @@
 @if(session('cart'))
 <?php
 $total = 0;
+$sale = 0;
 ?>
 <!-- Cart Start -->
 <form method="post" action="{{url('cart/update')}}" id="formCart">
@@ -30,10 +31,11 @@ $total = 0;
                                 <thead class="thead-dark">
                                     <tr>
                                         <th>Sản phẩm</th>
-                                        <th>Đơn giá</th>
+                                        <th>Giá</th>
                                         <th>Số lượng</th>
-                                        <th>Thành tiền</th>
-                                        <th>Thao tác</th>
+                                        <th>Kích cỡ</th>
+                                        <th>Tổng</th>
+                                        <th>Xoá</th>
                                     </tr>
                                 </thead>
                                 <tbody class="align-middle">
@@ -41,8 +43,8 @@ $total = 0;
                                     <tr>
                                         <td>
                                             <div class="img">
-                                                <a href="#"><img src="source/img/products/{{$product->image_link}}" alt="Image"></a>
-                                                <p>{{$product->name}}</p>
+                                                <a href="{{asset('product/'.$product->id)}}"><img src="{{asset('source/img/products/'.$product->image_link)}}" alt="Image"></a>
+                                                <a href="{{asset('product/'.$product->id)}}">{{$product->name}}</a>
                                             </div>
                                         </td>
                                         <td>{{number_format($product->price)}}</td>
@@ -53,14 +55,15 @@ $total = 0;
                                                 <button class="btn-plus"><i class="fa fa-plus"></i></button>
                                             </div>
                                         </td>
+                                        <td>
+                                            {{session("cart.$product->id.size")}}
+                                        </td>
                                         <td>{{number_format($product->price*session("cart.$product->id.number"))}}</td>
                                         <td><a class="btn" href="{{url('cart/delete/'.$product->id)}}"><i class="fa fa-trash"></i></a></td>
                                     </tr>
-                                    <?php if ($product->discount == 0) {
-                                        $total = $total + $product->price * session("cart.$product->id.number");
-                                    } else {
-                                        $total = $total + ($product->price * (100 - $product->discount) / 100) * session("cart.$product->id.number");
-                                    }
+                                    <?php
+                                    $sale = $sale + $product->price * $product->discount * 0.01 * session("cart.$product->id.number");
+                                    $total = $total + $product->price * session("cart.$product->id.number");
                                     ?>
                                     @endforeach
                                 </tbody>
@@ -82,12 +85,12 @@ $total = 0;
                                     <div class="cart-content">
                                         <h1>Tóm tắt</h1>
                                         <p>Thành tiền<span>{{number_format($total)}}</span></p>
-                                        <p>Phí ship<span>20,000</span></p>
-                                        <h2>Tổng<span>{{number_format($total+20000)}}</span></h2>
+                                        <p>Tiết kiệm<span>{{number_format($sale)}}</span></p>
+                                        <h2>Tổng tiền<span>{{number_format($total-$sale)}}</span></h2>
                                     </div>
                                     <div class="cart-btn">
-                                        <input class="btn" type="submit" value="Cập nhật giỏ hàng">
-                                        <a href="{{asset('checkout')}}" class="btn">Thanh toán</a>
+                                        <input class="button" type="submit" value="Cập nhật">
+                                        <input onclick="window.location.href='checkout'" type="button" class="button" value="Thanh toán">
                                         <!-- <a onclick="return confirm('Bạn muốn xóa giỏ hàng chứ?')" href="{{url('cart/deleteall')}}" class="btn_1">Xóa tất cả</a> -->
                                     </div>
                                 </div>
@@ -103,11 +106,10 @@ $total = 0;
 <div class="cart-page">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-12">
-                <div class="cart-page-inner">
-                    <div class="table-responsive">Giỏ hàng trống</div>
-                </div>
+            <div class="col-lg-8 cart-page-inner">
+                Chưa có sản phẩm nào trong giỏ hàng
             </div>
+            <div class="col-lg-4"></div>
         </div>
     </div>
 </div>

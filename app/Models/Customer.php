@@ -11,6 +11,6 @@ class Customer extends Model
 
     public function order()
     {
-        return $this->hasMany('\App\Models\Order','customer_phone','phone');
+        return $this->hasMany('\App\Models\Order','customer_id','id');
     }
 }

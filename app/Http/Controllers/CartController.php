@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Catalog;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
@@ -27,19 +26,20 @@ class CartController extends Controller
 				return redirect("cart");
 				break;
 
-			case 'add':
-				if (session("cart.$id.number")) {
-					session(["cart.$id.number" => session("cart.$id.number") + 1]);
+			case 'add':	
+				if (session("cart.$id")&& session("cart.$id.size") == $request->size) {					
+					session(["cart.$id.number" => session("cart.$id.number") + $request->number]);
 				} else {
-					session(["cart.$id.number" => 1]);
-					// session(["cart.qty"=>session("cart.qty")+1]);
-				}
-				return redirect("cart");
+					session([
+						"cart.$id.number" => $request->number,
+						"cart.$id.size" => $request->size
+					]);
+				}				
+				return redirect('cart');
 				break;
 
 			case 'delete':
 				session()->forget("cart.$id");
-				// session(["cart.qty"=>session("cart.qty")-1]);
 				return redirect('cart');
 				break;
 			case 'deleteall':

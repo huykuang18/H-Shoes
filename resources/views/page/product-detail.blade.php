@@ -6,7 +6,7 @@
     <div class="container-fluid">
         <ul class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
-            <li class="breadcrumb-item"><a href="{{asset('shop')}}">Cửa hàng</a></li>
+            <li class="breadcrumb-item"><a href="/shop">Cửa hàng</a></li>
             <li class="breadcrumb-item active">Chi tiết sản phẩm</li>
         </ul>
     </div>
@@ -24,59 +24,65 @@
                             <div class="product-slider-single normal-slider">
                                 @if(is_array($image_list))
                                 @foreach($image_list as $img)
-                                <img src="source/img/products/{{$img}}" alt="Product Image">
+                                <img src="{{asset('source/img/products/'.$img)}}" alt="Product Image">
                                 @endforeach
                                 @endif
                             </div>
                             <div class="product-slider-single-nav normal-slider">
                                 @if(is_array($image_list))
                                 @foreach($image_list as $img)
-                                <div class="slider-nav-img"><img src="source/img/products/{{$img}}" alt="Product Image"></div>
+                                <div class="slider-nav-img"><img src="{{asset('source/img/products/'.$img)}}" alt="Product Image"></div>
                                 @endforeach
                                 @endif
                             </div>
                         </div>
                         <div class="col-md-7">
-                            <div class="product-content">
-                                <div class="title">
-                                    <h2>{{$product->name}}</h2>
-                                </div>
-                                <div class="ratting">
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                </div>
-                                <div class="price">
-                                    <h4>Đơn giá:</h4>
-                                    @if($product->discount!=0)
-                                    <p>{{number_format($product->price*(100-$product->discount)*0.01)}} <span>{{$product->price}}</span></p>
-                                    @else
-                                    <p>{{number_format($product->price)}}</p>
-                                    @endif
-                                </div>
-                                <div class="quantity">
-                                    <h4>Quantity:</h4>
-                                    <div class="qty">
-                                        <button class="btn-minus"><i class="fa fa-minus"></i></button>
-                                        <input type="text" value="1">
-                                        <button class="btn-plus"><i class="fa fa-plus"></i></button>
+                            <form action="{{asset('cart/add/'.$product->id)}}" method="post">
+                                @csrf
+                                <div class="product-content">
+                                    <div class="title">
+                                        <h2>{{$product->name}}</h2>
+                                    </div>
+                                    <div class="ratting">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </div>
+                                    <div class="price">
+                                        <h4>Đơn giá:</h4>
+                                        @if($product->discount!=0)
+                                        <p>{{number_format($product->price*(100-$product->discount)*0.01)}} <span>{{$product->price}}</span></p>
+                                        @else
+                                        <p>{{number_format($product->price)}}</p>
+                                        @endif
+                                    </div>
+                                    <div class="quantity">
+                                        <h4>Số lượng:</h4>
+                                        <div class="qty">
+                                            <button type="button" class="btn-minus"><i class="fa fa-minus"></i></button>
+                                            <input autocomplete="on" min="1" max="99" type="text" name="number" value='1'>
+                                            <button type="button" class="btn-plus"><i class="fa fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="p-size">
+                                        <h4>Kích cỡ:</h4>
+                                        <div class="btn-group btn-group-sm" for="sizes">
+                                            <!-- <input class="btn" type="text" id="size" name="size" value=""> -->
+                                            <select id="sizes" name="size">
+                                            @foreach($sizes as $size)
+                                                <option value="{{$size->size}}">{{$size->size}}</option>
+                                            @endforeach
+                                            </select>  
+                                        </div>
+                                    </div>
+                                    <div class="action">
+                                        <button class="btn" type="submit"><i class="fa fa-shopping-cart"></i>&nbsp;Thêm vào giỏ</button>
+                                        <a class="btn" href="{{asset('wish/add/'.$product->id)}}"><i class="fa fa-heart"></i>&nbsp;Yêu thích</a>
                                     </div>
                                 </div>
-                                <div class="p-size">
-                                    <h4>Size:</h4>
-                                    <div class="btn-group btn-group-sm">
-                                        @foreach($sizes as $size)
-                                        <input type="button" class="btn" value="{{$size->size}}">
-                                        @endforeach
-                                    </div>
-                                </div>
-                                <div class="action">
-                                    <a class="btn" href="{{asset('cart/add/'.$product->id)}}"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</a>
-                                    <a class="btn" href="#"><i class="fa fa-shopping-bag"></i>Mua ngay</a>
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -96,7 +102,11 @@
                             <div id="description" class="container tab-pane active">
                                 <h4>Thông tin sản phẩm</h4>
                                 <p>
-                                    {{$product->content}}
+                                    <ul>
+                                    @foreach($contents as $content)
+                                    <li>{{$content}}</li>
+                                    @endforeach
+                                    </ul>
                                 </p>
                             </div>
                             <div id="reviews" class="container tab-pane fade">
@@ -150,10 +160,10 @@
                     <div class="row align-items-center product-slider product-slider-3">
 
                         @foreach($products as $relate)
-                        <div class="col-lg-3">
+                        <div class="col-lg-4">
                             <div class="product-item">
                                 <div class="product-title">
-                                    <a href="{{asset('product-'.$relate->id)}}">{{$relate->name}}</a>
+                                    <a href="{{asset('product/'.$relate->id)}}">{{$relate->name}}</a>
                                     <div class="ratting">
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star"></i>
@@ -163,17 +173,18 @@
                                     </div>
                                 </div>
                                 <div class="product-image">
-                                    <a href="product-detail.html">
-                                        <img src="source/img/products/{{$relate->image_link}}" alt="Product Image">
+                                    <a href="{{asset('product/'.$relate->id)}}">
+                                        <img src="{{asset('source/img/products/'.$relate->image_link)}}" alt="Product Image">
                                     </a>
-                                    <div class="product-action">
+                                    <!-- <div class="product-action">
                                         <a href="{{asset('cart/add/'.$relate->id)}}"><i class="fa fa-cart-plus"></i></a>
                                         <a href="#"><i class="fa fa-heart"></i></a>
-                                        <a href="{{asset('product-'.$relate->id)}}"><i class="fa fa-search"></i></a>
-                                    </div>
+                                        <a href="{{asset('product/'.$relate->id)}}"><i class="fa fa-search"></i></a>
+                                    </div> -->
                                 </div>
                                 <div class="product-price">
-                                    <h3>{{number_format($relate->price)}}<span>vnđ</span></h3>
+                                    <h3>{{number_format($relate->price)}}&nbsp;đ</h3>
+                                    <a class="btn" href="{{asset('wish/add/'.$relate->id)}}"><i class="fa fa-heart"></i></a>
                                 </div>
                             </div>
                         </div>

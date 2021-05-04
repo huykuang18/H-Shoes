@@ -19,6 +19,17 @@
         <div class="row">
             <div class="col-lg-8">
                 <div class="row">
+                    @if(count($products)==0)
+                    <div class="col-md-12">
+                        <div class="product-view-top">
+                            <div class="row">
+                                <div>
+                                    <p>Không có sản phẩm nào</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @else
                     <div class="col-md-12">
                         <div class="product-view-top">
                             <div class="row">
@@ -33,9 +44,10 @@
                                         <div class="dropdown">
                                             <div class="dropdown-toggle" data-toggle="dropdown">Sắp xếp theo</div>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                <a href="#" class="dropdown-item">Mới nhất</a>
-                                                <a href="#" class="dropdown-item">Giảm giá nhiều</a>
-                                                <a href="#" class="dropdown-item">Bán chạy</a>
+                                                <a href="{{asset('shop/newest')}}" class="dropdown-item">Mới nhất</a>
+                                                <a href="{{asset('shop/topsale')}}" class="dropdown-item">Giảm giá nhiều</a>
+                                                <a href="{{asset('shop/desc')}}" class="dropdown-item">Giá tăng dần</a>
+                                                <a href="{{asset('shop/asc')}}" class="dropdown-item">Giá giảm dần</a>
                                             </div>
                                         </div>
                                     </div>
@@ -45,16 +57,9 @@
                                         <div class="dropdown">
                                             <div class="dropdown-toggle" data-toggle="dropdown">Khoảng giá sản phẩm</div>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                <a href="#" class="dropdown-item">$0 to $50</a>
-                                                <a href="#" class="dropdown-item">$51 to $100</a>
-                                                <a href="#" class="dropdown-item">$101 to $150</a>
-                                                <a href="#" class="dropdown-item">$151 to $200</a>
-                                                <a href="#" class="dropdown-item">$201 to $250</a>
-                                                <a href="#" class="dropdown-item">$251 to $300</a>
-                                                <a href="#" class="dropdown-item">$301 to $350</a>
-                                                <a href="#" class="dropdown-item">$351 to $400</a>
-                                                <a href="#" class="dropdown-item">$401 to $450</a>
-                                                <a href="#" class="dropdown-item">$451 to $500</a>
+                                                <a href="{{asset('shop/price/0')}}" class="dropdown-item">Dưới 500.000</a>
+                                                <a href="{{asset('shop/price/500000')}}" class="dropdown-item">500.000 - 1 triệu</a>
+                                                <a href="{{asset('shop/price/1000000')}}" class="dropdown-item">Trên 1 triệu</a>
                                             </div>
                                         </div>
                                     </div>
@@ -63,14 +68,16 @@
                         </div>
                     </div>
 
-                    @if(count($products)==0)
-                    <p>Không có sản phẩm nào</p>
-                    @else
+
                     @foreach($products as $product)
                     <div class="col-md-4">
                         <div class="product-item">
                             <div class="product-title">
-                                <a href="{{asset('product-'.$product->id)}}">{{$product->name}}</a>
+                                <a href="{{asset('product/'.$product->id)}}">{{$product->name}}</a>
+                                @if($product->discount!=0)
+                                <div class="sale"><img src="{{asset('source/img/sale.png')}}" alt=""></div>
+                                @else
+                                @endif
                                 <div class="ratting">
                                     <i class="fa fa-star"></i>
                                     <i class="fa fa-star"></i>
@@ -80,24 +87,23 @@
                                 </div>
                             </div>
                             <div class="product-image">
-                                <a href="product-detail.html">
-                                    <img src="source/img/products/{{$product->image_link}}" alt="Product Image">
+                                <a href="{{asset('product/'.$product->id)}}">
+                                    <img src="{{asset('source/img/products/'.$product->image_link)}}" alt="Product Image">
                                 </a>
-                                <div class="product-action">
-                                    <a href="{{asset('cart/add/'.$product->id)}}"><i class="fa fa-cart-plus"></i></a>
-                                    <a href="#"><i class="fa fa-heart"></i></a>
-                                    <a href="{{asset('product-'.$product->id)}}"><i class="fa fa-search"></i></a>
-                                </div>
                             </div>
                             <div class="product-price">
-                                <h3>{{number_format($product->price)}}&nbsp;<span>vnđ</span></h3>
+                                @if($product->discount==0)
+                                <h3>{{number_format($product->price)}}<sup>đ</sup></h3>
+                                @else
+                                <h3>{{number_format($product->price*(100-$product->discount)*0.01)}}<sup>đ</sup></h3>
+                                @endif
+                                <a class="btn" href="{{asset('wish/add/'.$product->id)}}"><i class="fa fa-heart"></i></a>
                             </div>
                         </div>
                     </div>
                     @endforeach
                     @endif
                 </div>
-
                 <!-- Pagination Start -->
                 {{$products->links()}}
                 <!-- Pagination Start -->
@@ -117,6 +123,7 @@
             <div class="brand-item"><img src="source/img/brands/brand-3.jpg" alt=""></div>
             <div class="brand-item"><img src="source/img/brands/brand-4.jpg" alt=""></div>
             <div class="brand-item"><img src="source/img/brands/brand-5.jpg" alt=""></div>
+            <div class="brand-item"><img src="source/img/brands/brand-3.jpg" alt=""></div>
         </div>
     </div>
 </div>
